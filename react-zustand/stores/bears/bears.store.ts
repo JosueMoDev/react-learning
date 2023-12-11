@@ -11,9 +11,12 @@ interface BearState {
   polarBears: number;
   pandaBears: number;
   increaseBearsPopulation: (by: number, bear: BearFamily) => void;
+  computed: {
+    totalBears: number;
+  }
 }
 
-export const useBearStore = create<BearState>()((set) => ({
+export const useBearStore = create<BearState>()((set, get) => ({
   blackBears: 0,
   polarBears: 0,
   pandaBears: 0,
@@ -27,4 +30,9 @@ export const useBearStore = create<BearState>()((set) => ({
         return set((state) => ({ pandaBears: state.pandaBears + by }));
     }
   },
+  computed: {
+    get totalBears(): number { 
+      return get().blackBears + get().polarBears + get().pandaBears;
+    }
+  }
 }));
