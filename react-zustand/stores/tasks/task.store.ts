@@ -1,11 +1,12 @@
 import { StateCreator, create } from 'zustand';
-
 interface TaskState {
+  currentDraggingTask?: string;
   isDragging: boolean;
   tasks: Record<string, Task>;
   getTaskByStatus: (status: Status) => Task[];
-  setDraggingTask: () => void;
+  setDraggingTask: (id: string) => void;
   removeDraggingTask: () => void;
+  changeTaskStatus: (status: Status) => void;
 }
 
 import { Status, Task } from '../../src/interfaces/task.interface';
@@ -13,6 +14,7 @@ import { devtools } from 'zustand/middleware';
 
 const tasksApi: StateCreator<TaskState, [["zustand/devtools", never]]> = (set, get) => ({
   isDragging: false,
+  currentDraggingTask: undefined,
   tasks: {
     "ABC-1": { id: "ABC-1", title: "Task 1", status: "open" },
     "ABC-2": { id: "ABC-2", title: "Task 2", status: "done" },
@@ -25,8 +27,22 @@ const tasksApi: StateCreator<TaskState, [["zustand/devtools", never]]> = (set, g
     return Object.values( get().tasks).filter((task) => task.status === status );
   },
 
-  setDraggingTask: () => set(({ isDragging: true }), false, 'SetDraggingTask'),
-  removeDraggingTask: () => set(({ isDragging: false }), false, 'removeDraggingTask'),
+  setDraggingTask: (id: string) => set(({ isDragging: true, currentDraggingTask: id }), false, 'SetDraggingTask'),
+
+  removeDraggingTask: () => set(({ isDragging: false, currentDraggingTask: undefined }), false, 'removeDraggingTask'),
+
+  changeTaskStatus: (status: Status) => {
+    const id = get().currentDraggingTask;
+    if (!id) return;
+    const task = get().tasks[id];
+    task.status = status;
+    set((state) => ({
+      tasks: {
+        ...state.tasks,
+        [id]: task,
+      }
+    }))
+  }
 });
 
 export const useTaskStore = create<TaskState>()(

@@ -8,13 +8,16 @@ import classNames from 'classnames';
 interface Props {
   title: string;
   tasks: Task[]
-  value: Status;
+  status: Status;
 }
 
 
-export const JiraTasks = ({ title, tasks }: Props) => {
+export const JiraTasks = ({ title, status, tasks }: Props) => {
   const isDragging = useTaskStore((state) => state.isDragging);
-  const [onDragOver, setOnDragOver] = useState<boolean>(false)
+  const onChangeStatus = useTaskStore((state) => state.changeTaskStatus);
+
+  const [onDragOver, setOnDragOver] = useState<boolean>(false);
+
   const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setOnDragOver(true)
@@ -27,6 +30,7 @@ export const JiraTasks = ({ title, tasks }: Props) => {
 
   const hadleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
+    onChangeStatus(status)
     setOnDragOver(false);
   }
   return (

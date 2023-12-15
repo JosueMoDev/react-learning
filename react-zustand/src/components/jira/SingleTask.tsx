@@ -14,7 +14,7 @@ export const SingleTask = ({ task }: props) => {
   return (
     <div
       draggable
-      onDragStart={setDragTask}
+      onDragStart={() => setDragTask(task.id)}
       onDragEnd={removeDragTask}
       className="flex items-center justify-between p-2 mt-5"
     >
