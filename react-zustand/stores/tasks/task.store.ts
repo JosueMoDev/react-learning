@@ -1,13 +1,18 @@
 import { StateCreator, create } from 'zustand';
 
 interface TaskState {
-    tasks: Record<string, Task>;
-    getTaskByStatus: (status: Status) => Task[];
+  isDragging: boolean;
+  tasks: Record<string, Task>;
+  getTaskByStatus: (status: Status) => Task[];
+  setDraggingTask: () => void;
+  removeDraggingTask: () => void;
 }
 
 import { Status, Task } from '../../src/interfaces/task.interface';
+import { devtools } from 'zustand/middleware';
 
-const tasksApi: StateCreator<TaskState> = (set, get) => ({
+const tasksApi: StateCreator<TaskState, [["zustand/devtools", never]]> = (set, get) => ({
+  isDragging: false,
   tasks: {
     "ABC-1": { id: "ABC-1", title: "Task 1", status: "open" },
     "ABC-2": { id: "ABC-2", title: "Task 2", status: "done" },
@@ -18,7 +23,14 @@ const tasksApi: StateCreator<TaskState> = (set, get) => ({
 
   getTaskByStatus (status: Status): Task[] {
     return Object.values( get().tasks).filter((task) => task.status === status );
-  }
+  },
+
+  setDraggingTask: () => set(({ isDragging: true }), false, 'SetDraggingTask'),
+  removeDraggingTask: () => set(({ isDragging: false }), false, 'removeDraggingTask'),
 });
 
-export const useTaskStore = create<TaskState>()(tasksApi);
+export const useTaskStore = create<TaskState>()(
+  devtools(
+    tasksApi
+  )
+);
