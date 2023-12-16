@@ -1,4 +1,9 @@
 import { StateCreator, create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
+
+import { v4 as uuid } from 'uuid';
+import { Status, Task } from '../../src/interfaces/task.interface';
 interface TaskState {
   currentDraggingTask?: string;
   isDragging: boolean;
@@ -7,12 +12,11 @@ interface TaskState {
   setDraggingTask: (id: string) => void;
   removeDraggingTask: () => void;
   changeTaskStatus: (status: Status) => void;
+  addTask: (title: string, status: Status) => void;
 }
 
-import { Status, Task } from '../../src/interfaces/task.interface';
-import { devtools } from 'zustand/middleware';
 
-const tasksApi: StateCreator<TaskState, [["zustand/devtools", never]]> = (set, get) => ({
+const tasksApi: StateCreator<TaskState, [["zustand/devtools", never],  ["zustand/immer", never]]> = (set, get) => ({
   isDragging: false,
   currentDraggingTask: undefined,
   tasks: {
@@ -27,6 +31,14 @@ const tasksApi: StateCreator<TaskState, [["zustand/devtools", never]]> = (set, g
     return Object.values( get().tasks).filter((task) => task.status === status );
   },
 
+
+  addTask: (title: string, status: Status) => {
+    const newTask = { id: uuid(), title, status };
+    set( (state) => {
+      state.tasks[newTask.id] = newTask;
+    });
+  },
+
   setDraggingTask: (id: string) => set(({ isDragging: true, currentDraggingTask: id }), false, 'SetDraggingTask'),
 
   removeDraggingTask: () => set(({ isDragging: false, currentDraggingTask: undefined }), false, 'removeDraggingTask'),
@@ -34,19 +46,21 @@ const tasksApi: StateCreator<TaskState, [["zustand/devtools", never]]> = (set, g
   changeTaskStatus: (status: Status) => {
     const id = get().currentDraggingTask;
     if (!id) return;
-    const task = get().tasks[id];
+    const task = {...get().tasks[id] };
     task.status = status;
-    set((state) => ({
-      tasks: {
-        ...state.tasks,
-        [id]: task,
+    set((state) => {
+      state.tasks[id] = {
+        ...task,
       }
-    }))
+    })
   }
 });
 
 export const useTaskStore = create<TaskState>()(
   devtools(
-    tasksApi
+    persist(
+      immer(tasksApi),
+      { name: 'taks-storage'}
+    )
   )
 );
