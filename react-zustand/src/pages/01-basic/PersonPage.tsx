@@ -1,6 +1,6 @@
 import { WhiteCard } from '../../components';
+import { usePersonStore } from '../../stores';
 
-import { usePersonStore } from '../../../stores';
 
 export const PersonPage = () => {
   const firstName = usePersonStore((state) => state.firstName);

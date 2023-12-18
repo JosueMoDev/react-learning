@@ -1,5 +1,5 @@
 import { WhiteCard } from '../../components';
-import { BearFamily, useBearStore } from '../../../stores/bears/bears.store';
+import { BearFamily, useBearStore } from '../../stores';
 
 export const BearPage = () => {
   const blackBears = useBearStore( state => state.blackBears);

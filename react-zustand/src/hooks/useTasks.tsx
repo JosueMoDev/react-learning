@@ -1,7 +1,7 @@
 import { DragEvent, useState } from "react";
-import { useTaskStore } from "../../stores";
 import { Status } from "../interfaces/task.interface";
 import Swal from "sweetalert2";
+import { useTaskStore } from "../stores";
 
 interface Props {
   status: Status;

@@ -3,7 +3,7 @@ import { devtools, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
 import { v4 as uuid } from 'uuid';
-import { Status, Task } from '../../src/interfaces/task.interface';
+import { Status, Task } from '../../interfaces/task.interface';
 interface TaskState {
   currentDraggingTask?: string;
   isDragging: boolean;

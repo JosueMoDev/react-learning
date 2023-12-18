@@ -1,6 +1,6 @@
 import { IoAccessibilityOutline, IoHeartOutline, IoListOutline, IoLockClosedOutline, IoPawOutline } from 'react-icons/io5';
 import { WhiteCard } from '../../components';
-import { useBearStore } from '../../../stores/bears/bears.store';
+import { useBearStore } from '../../stores';
 
 export const Dashboard = () => {
   const totalBears = useBearStore((state) => state.computed.totalBears);

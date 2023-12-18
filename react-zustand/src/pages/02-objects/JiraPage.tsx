@@ -1,5 +1,5 @@
-import { useTaskStore } from '../../../stores';
 import { JiraTasks } from '../../components';
+import { useTaskStore } from '../../stores';
 
 export const JiraPage = () => {
   const openTasks = useTaskStore((store) => store.getTaskByStatus('open'));
